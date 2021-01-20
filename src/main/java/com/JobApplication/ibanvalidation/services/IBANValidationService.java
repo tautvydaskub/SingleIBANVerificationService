@@ -1,8 +1,8 @@
-package com.JobApplication.IBANValidation.Services;
+package com.JobApplication.ibanvalidation.services;
 
-import com.JobApplication.IBANValidation.Models.BankStatus;
-import com.JobApplication.IBANValidation.Models.IBANModel;
-import com.JobApplication.IBANValidation.Models.ValidationStatus;
+import com.JobApplication.ibanvalidation.models.BankStatus;
+import com.JobApplication.ibanvalidation.models.IBANModel;
+import com.JobApplication.ibanvalidation.models.ValidationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigInteger;
@@ -25,11 +25,12 @@ public class IBANValidationService {
     public IBANModel check(IBANModel iban) {
         splitIBAN(iban);
         String isIBANValid = getIBANValidity();
-        iban.setIsValidIBAN(new ValidationStatus(isIBANValid));
-        if (iban.getIsValidIBAN().getStatus() == "valid") {
-            BankStatus belongsToSEB = bankChecker.checkBank(fullIBAN, "LT", "70440", 9);
-            iban.setBelongsToSEB(belongsToSEB);
+        iban.setValidationStatus(new ValidationStatus(isIBANValid));
+        if (iban.getValidationStatus().getStatus() == "valid") {
+            BankStatus recognizedBank = bankChecker.checkBank(fullIBAN);
+            iban.setRecognizableBank(recognizedBank);
         }
+        iban.setFullIBANNumber(fullIBAN);
         return iban;
     }
 
@@ -51,17 +52,17 @@ public class IBANValidationService {
                     String rearrangedIBAN = fullIBAN.substring(4) + fullIBAN.substring(0, 4);
 
                     //Convert IBAN characters (A-Z) to integers (A=10, B=11, ..., Z=35)
-                    String convertedIBAN = "";
+                    StringBuilder convertedIBAN = new StringBuilder();
                     for (int i = 0; i < rearrangedIBAN.length(); i++) {
                         if (rearrangedIBAN.charAt(i) >= 'A' && rearrangedIBAN.charAt(i) <= 'Z') {
-                            convertedIBAN += ((int) rearrangedIBAN.charAt(i)) - 55;
+                            convertedIBAN.append((int) rearrangedIBAN.charAt(i) - 55);
                         } else {
-                            convertedIBAN += rearrangedIBAN.charAt(i);
+                            convertedIBAN.append(rearrangedIBAN.charAt(i));
                         }
                     }
 
-                    //Calculate IBAN mod 97. Result = 1 means that the IBAN is valid
-                    BigInteger convertedIBANAsBigInt = new BigInteger(convertedIBAN);
+                    //Calculate converted IBAN mod 97. Result = 1 means that the IBAN is valid
+                    BigInteger convertedIBANAsBigInt = new BigInteger(convertedIBAN.toString());
                     if (convertedIBANAsBigInt.mod(new BigInteger("97")).compareTo(BigInteger.ONE) == 0) {
                         status = "valid";
                     } else {
@@ -80,7 +81,7 @@ public class IBANValidationService {
     }
 
     private void splitIBAN(IBANModel iban) {
-        fullIBAN = iban.getFullIBANNumber().toUpperCase();
+        fullIBAN = iban.getFullIBANNumber().toUpperCase().replaceAll("\\s","");
         countryCode = fullIBAN.substring(0, 2);
     }
 

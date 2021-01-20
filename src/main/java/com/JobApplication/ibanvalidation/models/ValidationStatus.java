@@ -1,4 +1,4 @@
-package com.JobApplication.IBANValidation.Models;
+package com.JobApplication.ibanvalidation.models;
 
 import java.util.Objects;
 

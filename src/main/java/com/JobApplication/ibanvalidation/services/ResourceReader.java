@@ -1,5 +1,6 @@
-package com.JobApplication.IBANValidation.Services;
+package com.JobApplication.ibanvalidation.services;
 
+import com.JobApplication.ibanvalidation.models.RecognizedBank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -9,7 +10,9 @@ import org.springframework.util.FileCopyUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,14 +23,26 @@ public class ResourceReader {
 
     public Map<String, Integer> ibanCodeLengthByCountryCodeReader(){
         String data = getFileData("classpath:CodeLengths.csv");
-        Map<String,Integer> map = new HashMap<String, Integer>();
+        Map<String,Integer> codeLengths = new HashMap<>();
         for(String line : data.split(System.lineSeparator()))
         {
             String[] lineData = line.split(",");
-            map.put(lineData[0], Integer.parseInt(lineData[1]));
+            codeLengths.put(lineData[0], Integer.parseInt(lineData[1]));
         }
-        return map;
+        return codeLengths;
     }
+
+    public List<RecognizedBank> recognizedBankReader() {
+        String data = getFileData("classpath:RecognizedBanks.csv");
+        List<RecognizedBank> recognizedBanks = new ArrayList<>();
+        for(String line : data.split(System.lineSeparator()))
+        {
+            String[] lineData = line.split(",");
+            recognizedBanks.add(new RecognizedBank(lineData[0], lineData[1], lineData[2]));
+        }
+        return recognizedBanks;
+    }
+
 
     private Resource getResource(String path)
     {

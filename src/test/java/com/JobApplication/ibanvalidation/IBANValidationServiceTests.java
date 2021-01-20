@@ -1,12 +1,11 @@
-package com.JobApplication.IBANValidation;
+package com.JobApplication.ibanvalidation;
 
-import com.JobApplication.IBANValidation.Models.IBANModel;
-import com.JobApplication.IBANValidation.Models.ValidationStatus;
-import com.JobApplication.IBANValidation.Services.BankCheckingService;
-import com.JobApplication.IBANValidation.Services.IBANValidationService;
-import com.JobApplication.IBANValidation.Services.ResourceReader;
-import org.junit.Assert;
-import org.junit.Test;
+import com.JobApplication.ibanvalidation.models.IBANModel;
+import com.JobApplication.ibanvalidation.models.ValidationStatus;
+import com.JobApplication.ibanvalidation.services.BankCheckingService;
+import com.JobApplication.ibanvalidation.services.IBANValidationService;
+import com.JobApplication.ibanvalidation.services.ResourceReader;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +42,6 @@ public class IBANValidationServiceTests {
 
         ibanModel = ibanValidationService.check(ibanModel);
 
-        Assert.assertEquals(validationStatus, ibanModel.getIsValidIBAN());
+        Assertions.assertEquals(validationStatus, ibanModel.getValidationStatus());
     }
 }

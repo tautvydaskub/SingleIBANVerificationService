@@ -1,4 +1,4 @@
-package com.JobApplication.IBANValidation;
+package com.JobApplication.ibanvalidation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
